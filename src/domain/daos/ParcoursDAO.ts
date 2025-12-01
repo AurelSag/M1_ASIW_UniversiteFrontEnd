@@ -16,11 +16,12 @@ export class ParcoursDAO implements IDAO<Parcours> {
 
   public async create(data: Parcours): Promise<Parcours> {
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/Parcours`, data);
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/parcours`, data);
       return response.data;
     } catch (error) {
       throw new Error('Impossible de créer le nouveau parcours');
     }
+    // return data;
   }
 
   public async get(id: number): Promise<Parcours> {
@@ -30,7 +31,13 @@ export class ParcoursDAO implements IDAO<Parcours> {
 
   public async update(id: number, data: Parcours): Promise<Parcours> {
     // Update a Parcours document in the database
-    return data;
+    try {
+      const response = await axios.put(`${import.meta.env.VITE_API_URL}/api/parcours/${id}`, data);
+      return response.data;
+    } catch (error) {
+      throw new Error('Impossible de mettre à jour le parcours');
+    }
+    // return data;
   }
 
   public async delete(id: number): Promise<void> {
@@ -38,15 +45,15 @@ export class ParcoursDAO implements IDAO<Parcours> {
   }
 
   public async list(): Promise<Parcours[]> {
-    /*try {
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/Parcours`);
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/parcours`);
       return response.data;
     } catch (error) {
       throw new Error('Impossible de récupérer la liste des parcours');
-    }*/
-    return [
+    }
+    /*return [
       { ID: 1, NomParcours: 'Parcours 1', AnneeFormation: 2024 },
       { ID: 2, NomParcours: 'Parcours 2', AnneeFormation: 2023 },
-    ];
+    ];*/
   }
 }

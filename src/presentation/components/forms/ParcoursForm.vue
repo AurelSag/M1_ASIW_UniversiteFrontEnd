@@ -23,56 +23,54 @@ const closeForm = () => {
 };
 
 const saveParcours = () => {
-
   if (formErrors.value.NomParcours || formErrors.value.AnneeFormation) {
-
     return;
-
   }
 
   if (currentParcours.value.ID) {
-
-    // Mise à jour d'un parcours
-
+    ParcoursDAO.getInstance()
+      .update(currentParcours.value.ID, currentParcours.value)
+      .then((newParcours) => {
+        alert('Parcours mis à jour avec succès');
+        emit('update:parcours', newParcours);
+        closeForm();
+      })
+      .catch((ex) => {
+        alert(ex.message);
+      });
   } else {
-
-    ParcoursDAO.getInstance().create(currentParcours.value).then(() => {
-
-      alert('Parcours créé avec succès');
-
-      closeForm();
-
-    }).catch((ex) => {
-
-      alert(ex.message);
-
-    });
-
+    ParcoursDAO.getInstance()
+      .create(currentParcours.value)
+      .then((newParcours) => {
+        alert('Parcours créé avec succès');
+        emit('create:parcours', newParcours);
+        closeForm();
+      })
+      .catch((ex) => {
+        alert(ex.message);
+      });
   }
-
 };
 
 const formErrors = ref<{
-
   NomParcours: string | null;
 
   AnneeFormation: string | null;
-
 }>({
-
   NomParcours: null,
 
-  AnneeFormation: null,
-
+  AnneeFormation: null
 });
 
 const props = defineProps({
   parcours: {
     type: Object as () => Parcours | null,
     required: false,
-    default: null,
-  },
+    default: null
+  }
 });
+
+const emit = defineEmits(['create:parcours', 'update:parcours']);
 
 onBeforeMount(() => {
   if (props.parcours) {
@@ -82,38 +80,38 @@ onBeforeMount(() => {
 
 defineExpose({
   openForm,
-  closeForm,
+  closeForm
 });
 
-watch(() => currentParcours.value.NomParcours, () => {
-
-  if (!currentParcours.value.NomParcours || currentParcours.value.NomParcours.trim() === '' || currentParcours.value.NomParcours.length < 3) {
-
-    formErrors.value.NomParcours = 'Le nom du parcours doit faire au moins 3 caractères';
-
-  } else {
-
-    formErrors.value.NomParcours = null;
-
+watch(
+  () => currentParcours.value.NomParcours,
+  () => {
+    if (
+      !currentParcours.value.NomParcours ||
+      currentParcours.value.NomParcours.trim() === '' ||
+      currentParcours.value.NomParcours.length < 3
+    ) {
+      formErrors.value.NomParcours = 'Le nom du parcours doit faire au moins 3 caractères';
+    } else {
+      formErrors.value.NomParcours = null;
+    }
   }
+);
 
-});
-
-watch(() => currentParcours.value.AnneeFormation, () => {
-
-  if (typeof currentParcours.value.AnneeFormation !== "number"
-    || currentParcours.value.AnneeFormation < 2000
-    || currentParcours.value.AnneeFormation > 2100)
-  {
-    formErrors.value.AnneeFormation = `L'année de formation doit être comprise entre 2000 et 2100`;
-  } else {
-
-    formErrors.value.AnneeFormation = null;
-
+watch(
+  () => currentParcours.value.AnneeFormation,
+  () => {
+    if (
+      typeof currentParcours.value.AnneeFormation !== 'number' ||
+      currentParcours.value.AnneeFormation < 2000 ||
+      currentParcours.value.AnneeFormation > 2100
+    ) {
+      formErrors.value.AnneeFormation = `L'année de formation doit être comprise entre 2000 et 2100`;
+    } else {
+      formErrors.value.AnneeFormation = null;
+    }
   }
-
-});
-
+);
 </script>
 
 <template>
@@ -126,17 +124,39 @@ watch(() => currentParcours.value.AnneeFormation, () => {
       <div class="card-body">
         <div class="card-text mt-1 mb-1">
           <form>
-            <CustomInput v-model="currentParcours.NomParcours" id="intitule" libelle="Intitulé" type="text" placeholder="Intitulé du parcours" :error="formErrors.NomParcours" />
-            <CustomInput v-model="currentParcours.AnneeFormation" class="mt-2" id="annee" libelle="Année" type="number"
-                         placeholder="Année de formation" :error="formErrors.AnneeFormation" />
+            <CustomInput
+              v-model="currentParcours.NomParcours"
+              id="intitule"
+              libelle="Intitulé"
+              type="text"
+              placeholder="Intitulé du parcours"
+              :error="formErrors.NomParcours"
+            />
+            <CustomInput
+              v-model="currentParcours.AnneeFormation"
+              class="mt-2"
+              id="annee"
+              libelle="Année"
+              type="number"
+              placeholder="Année de formation"
+              :error="formErrors.AnneeFormation"
+            />
           </form>
         </div>
-        <CustomButton class="mt-1" style="margin-left: 5px" :color="BootstrapButtonEnum.danger"
-                      @click="closeForm">
+        <CustomButton
+          class="mt-1"
+          style="margin-left: 5px"
+          :color="BootstrapButtonEnum.danger"
+          @click="closeForm"
+        >
           Annuler
         </CustomButton>
-        <CustomButton class="mt-1" style="margin-left: 5px" :color="BootstrapButtonEnum.primary"
-                      @click="saveParcours">
+        <CustomButton
+          class="mt-1"
+          style="margin-left: 5px"
+          :color="BootstrapButtonEnum.primary"
+          @click="saveParcours"
+        >
           Enregistrer
         </CustomButton>
       </div>
