@@ -59,43 +59,34 @@ const onParcoursCreated = (newParcours: Parcours) => {
 };
 
 const onParcoursUpdated = (update: { message: string; parcours: Parcours }) => {
-  const index = parcours.value.findIndex(p => p.ID === update.parcours.ID);
+  const index = parcours.value.findIndex((p) => p.ID === update.parcours.ID);
   if (index !== -1) {
     parcours.value[index] = update.parcours;
   }
 };
 
 const onDeleteParcours = (p: Parcours) => {
-
   Swal.fire({
-
     title: 'Êtes-vous sûr de vouloir supprimer ce parcours ?',
 
     showCancelButton: true,
 
     confirmButtonText: 'Supprimer',
 
-    cancelButtonText: 'Annuler',
-
+    cancelButtonText: 'Annuler'
   }).then((result) => {
-
     if (result.isConfirmed) {
-
-      ParcoursDAO.getInstance().delete(p.ID!).then(() => {
-
-        parcours.value = parcours.value.filter((parcours) => parcours.ID !== p.ID);
-
-      }).catch(() => {
-
-        alert('Une erreur est survenue lors de la suppression du parcours');
-
-      });
-
+      ParcoursDAO.getInstance()
+        .delete(p.ID!)
+        .then(() => {
+          parcours.value = parcours.value.filter((parcours) => parcours.ID !== p.ID);
+        })
+        .catch(() => {
+          alert('Une erreur est survenue lors de la suppression du parcours');
+        });
     }
-
-  })
-
-}
+  });
+};
 </script>
 
 <template>

@@ -3,15 +3,14 @@ import { BootstrapButtonEnum } from '@/types/BootstrapButtonEnum';
 import { computed, defineProps } from 'vue';
 
 const props = defineProps<{
-  color: BootstrapButtonEnum
+  color: BootstrapButtonEnum;
 }>();
 
 const buttonClasses = computed(() => {
-
   return {
-    'btn': true,
+    btn: true,
     [props.color]: true
-  }
+  };
 });
 </script>
 
