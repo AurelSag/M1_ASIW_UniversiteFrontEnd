@@ -16,7 +16,7 @@ export class ParcoursDAO implements IDAO<Parcours> {
 
   public async create(data: Parcours): Promise<Parcours> {
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/parcours`, data);
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/Parcours`, data);
       return response.data;
     } catch (error) {
       throw new Error('Impossible de créer le nouveau parcours');
@@ -32,7 +32,7 @@ export class ParcoursDAO implements IDAO<Parcours> {
   public async update(id: number, data: Parcours): Promise<Parcours> {
     // Update a Parcours document in the database
     try {
-      const response = await axios.put(`${import.meta.env.VITE_API_URL}/api/parcours/${id}`, data);
+      const response = await axios.put(`${import.meta.env.VITE_API_URL}/api/Parcours/${id}`, data);
       return response.data;
     } catch (error) {
       throw new Error('Impossible de mettre à jour le parcours');
@@ -42,11 +42,17 @@ export class ParcoursDAO implements IDAO<Parcours> {
 
   public async delete(id: number): Promise<void> {
     // Delete a Parcours document from the database
+    try {
+      const response = await axios.delete(`${import.meta.env.VITE_API_URL}/api/Parcours/${id}`);
+      return response.data;
+    } catch (error) {
+      throw new Error('Impossible de supprimer le parcours');
+    }
   }
 
   public async list(): Promise<Parcours[]> {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/parcours`);
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/Parcours`);
       return response.data;
     } catch (error) {
       throw new Error('Impossible de récupérer la liste des parcours');
