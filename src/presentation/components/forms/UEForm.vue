@@ -137,7 +137,7 @@ watch(
 <template>
     <CustomModal :isOpen="isOpen">
         <template v-slot:title>
-            <template v-if="ue && ue.ID"> Modification de l'UE</template>
+            <template v-if="currentUe.ID"> Modification de l'UE</template>
             <template v-else> Nouvelle UE</template>
         </template>
 

@@ -118,7 +118,7 @@ watch(
 <template>
     <CustomModal :isOpen="isOpen">
         <template v-slot:title>
-            <template v-if="parcours && parcours.ID"> Modification du parcours</template>
+            <template v-if="currentParcours.ID"> Modification du parcours</template>
 
             <template v-else> Nouveau parcours</template>
         </template>
