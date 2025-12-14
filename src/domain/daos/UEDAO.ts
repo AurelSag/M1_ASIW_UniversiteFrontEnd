@@ -2,21 +2,21 @@ import type { IDAO } from './IDAO';
 import axios from 'axios';
 import type { UE } from '@/domain/entities/UE';
 
-export class UeDAO implements IDAO<UE> {
-    private static instance: UeDAO;
+export class UEDAO implements IDAO<UE> {
+    private static instance: UEDAO;
 
     private constructor() {}
 
-    public static getInstance(): UeDAO {
-        if (!UeDAO.instance) {
-            UeDAO.instance = new UeDAO();
+    public static getInstance(): UEDAO {
+        if (!UEDAO.instance) {
+            UEDAO.instance = new UEDAO();
         }
-        return UeDAO.instance;
+        return UEDAO.instance;
     }
 
     public async create(data: UE): Promise<UE> {
         try {
-            const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/Ue`, data);
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/Ue`, data.toJSON());
             return response.data;
         } catch (error) {
             throw new Error('Impossible de créer la nouvelle Ue');
