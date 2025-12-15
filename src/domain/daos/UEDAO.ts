@@ -1,5 +1,5 @@
 import type { IDAO } from './IDAO';
-import axios from 'axios';
+import axios, { type AxiosResponse } from 'axios';
 import type { UE } from '@/domain/entities/UE';
 
 export class UEDAO implements IDAO<UE> {
@@ -36,10 +36,14 @@ export class UEDAO implements IDAO<UE> {
     public async update(id: number, data: UE): Promise<UE> {
         // Update a Ue document in the database
         try {
-            const response = await axios.put(`${import.meta.env.VITE_API_URL}/api/Ue/${id}`, data);
+            const response = (await axios.put(`${import.meta.env.VITE_API_URL}/api/Ue/${id}`, data));
+
+            const newParcoursIds = (data.toJSON() as { Parcours: number[] }).Parcours;
+            const parcours = (await axios.put(`${import.meta.env.VITE_API_URL}/api/Ues/${id}/parcours`, { parcoursIds: newParcoursIds }));
+
             return response.data;
         } catch (error) {
-            throw new Error('Impossible de mettre à jour la Ue');
+            throw new Error('Impossible de mettre à jour l\'Ue');
         }
     }
 

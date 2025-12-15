@@ -17,7 +17,7 @@ const parcoursOptions = ref<Parcours[]>([]);
 const openForm = (ue: UE | null = null) => {
     isOpen.value = true;
     if (ue) {
-        currentUe.value = structuredClone(toRaw(ue));
+        currentUe.value = ue ? new UE(ue.ID, ue.Intitule, ue.NumeroUe, ue.Parcours) : new UE(null, null, null, null);
     }
 };
 
