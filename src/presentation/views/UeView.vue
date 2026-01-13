@@ -9,16 +9,10 @@ import { Parcours } from '@/domain/entities/Parcours';
 import { ParcoursDAO } from '@/domain/daos/ParcoursDAO';
 import { Etudiant } from '@/domain/entities/Etudiant';
 import { EtudiantDAO } from '@/domain/daos/EtudiantDAO';
+import { Note } from '@/domain/entities/Note';
+import { NoteDAO } from '@/domain/daos/NoteDAO';
 import Swal from 'sweetalert2';
 import { useNotification } from '@kyvg/vue3-notification';
-
-// Interface pour les notes (à créer si elle n'existe pas encore)
-interface Note {
-    ID?: number;
-    etudiant_id: number;
-    ue_id: number;
-    valeur: number | null;
-}
 
 const route = useRoute();
 const { notify } = useNotification();
@@ -51,11 +45,7 @@ onMounted(async () => {
 
             // Parser le numéro d'UE
             if (data.NumeroUe) {
-                const parts = data.NumeroUe.split('_');
-                if (parts.length === 2) {
-                    numeroUe1.value = parts[0];
-                    numeroUe2.value = parts[1];
-                }
+                numero.value = data.NumeroUe;
             }
 
             intitule.value = data.Intitule || '';
@@ -107,22 +97,16 @@ const loadEtudiantsAndNotes = async () => {
             return nomA.localeCompare(nomB);
         });
 
-        // Charger les notes pour cette UE
-        // À CRÉER dans le backend: GET /api/notes?ue_id={ueId}
+        // Charger les notes pour cette UE via le DAO
         try {
-            const response = await fetch(
-                `${import.meta.env.VITE_API_URL}/api/notes?ue_id=${ueId.value}`
-            );
-            if (response.ok) {
-                const notesData: Note[] = await response.json();
-                const notesMap = new Map<number, Note>();
-                notesData.forEach(note => {
-                    notesMap.set(note.etudiant_id, note);
-                });
-                notes.value = notesMap;
-            }
+            const notesData = await NoteDAO.getInstance().getNotesByUe(ueId.value);
+            const notesMap = new Map<number, Note>();
+            notesData.forEach(note => {
+                notesMap.set(note.etudiant_id, note);
+            });
+            notes.value = notesMap;
         } catch (error) {
-            console.warn('Notes endpoint not yet implemented:', error);
+            console.warn('Erreur lors du chargement des notes:', error);
             notes.value = new Map();
         }
 
@@ -139,7 +123,7 @@ const loadEtudiantsAndNotes = async () => {
 const onEnregistrer = async () => {
     try {
         // Validation des champs
-        if (!numeroUe1.value || !numeroUe2.value || !intitule.value) {
+        if (!numero.value || !intitule.value) {
             notify({
                 title: 'Attention',
                 text: 'Veuillez remplir tous les champs',
@@ -152,7 +136,7 @@ const onEnregistrer = async () => {
         const updatedUe = new UE(
             ue.value.ID,
             intitule.value,
-            `${numeroUe1.value}_${numeroUe2.value}`,
+            numero.value,
             selectedParcours.value
         );
 
@@ -184,7 +168,7 @@ const ajouterParcours = async (parcours: Parcours) => {
         const updatedUe = new UE(
             ue.value.ID,
             intitule.value,
-            `${numeroUe1.value}_${numeroUe2.value}`,
+            numero.value,
             selectedParcours.value
         );
 
@@ -195,7 +179,7 @@ const ajouterParcours = async (parcours: Parcours) => {
 
         notify({
             title: 'Succès',
-            text: `Le parcours "${parcours.NomParcours}" a été ajouté`,
+            text: `Le parcours ${parcours.NomParcours} a été ajouté`,
             type: 'success'
         });
     } catch (error) {
@@ -231,7 +215,7 @@ const supprimerParcours = async (parcours: Parcours, index: number) => {
             const updatedUe = new UE(
                 ue.value.ID,
                 intitule.value,
-                `${numeroUe1.value}_${numeroUe2.value}`,
+                numero.value,
                 selectedParcours.value
             );
 
@@ -291,11 +275,7 @@ const updateNote = async (etudiant: Etudiant, event: Event) => {
         if (valeur === '') {
             // Supprimer la note si le champ est vide
             if (existingNote && existingNote.ID) {
-                // À CRÉER dans le backend: DELETE /api/notes/{id}
-                await fetch(
-                    `${import.meta.env.VITE_API_URL}/api/notes/${existingNote.ID}`,
-                    { method: 'DELETE' }
-                );
+                await NoteDAO.getInstance().delete(existingNote.ID);
                 notes.value.delete(etudiant.ID!);
                 notify({
                     title: 'Succès',
@@ -308,20 +288,16 @@ const updateNote = async (etudiant: Etudiant, event: Event) => {
 
             if (existingNote && existingNote.ID) {
                 // Modifier la note existante
-                // À CRÉER dans le backend: PUT /api/notes/{id}
-                const response = await fetch(
-                    `${import.meta.env.VITE_API_URL}/api/notes/${existingNote.ID}`,
-                    {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            etudiant_id: etudiant.ID,
-                            ue_id: ueId.value,
-                            valeur: noteNum
-                        })
-                    }
+                const updatedNoteData = new Note(
+                    existingNote.ID,
+                    etudiant.ID!,
+                    ueId.value,
+                    noteNum
                 );
-                const updatedNote = await response.json();
+                const updatedNote = await NoteDAO.getInstance().update(
+                    existingNote.ID,
+                    updatedNoteData
+                );
                 notes.value.set(etudiant.ID!, updatedNote);
                 notify({
                     title: 'Succès',
@@ -330,20 +306,13 @@ const updateNote = async (etudiant: Etudiant, event: Event) => {
                 });
             } else {
                 // Créer une nouvelle note
-                // À CRÉER dans le backend: POST /api/notes
-                const response = await fetch(
-                    `${import.meta.env.VITE_API_URL}/api/notes`,
-                    {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            etudiant_id: etudiant.ID,
-                            ue_id: ueId.value,
-                            valeur: noteNum
-                        })
-                    }
+                const newNoteData = new Note(
+                    null,
+                    etudiant.ID!,
+                    ueId.value,
+                    noteNum
                 );
-                const newNote = await response.json();
+                const newNote = await NoteDAO.getInstance().create(newNoteData);
                 notes.value.set(etudiant.ID!, newNote);
                 notify({
                     title: 'Succès',
@@ -387,7 +356,7 @@ onMounted(() => {
                     <!-- Section gauche: Formulaire UE -->
                     <div class="col-md-6">
                         <div class="row mb-3">
-                            <div class="col-6">
+                            <div class="col-12">
                                 <label class="form-label">Numéro :</label>
                                 <input
                                     type="text"

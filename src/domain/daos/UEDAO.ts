@@ -26,7 +26,7 @@ export class UEDAO implements IDAO<UE> {
     public async get(id: number): Promise<UE> {
         // Retrieve a Ue document from the database
         try {
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/Ue/${id}`);
+            const response  = await axios.get(`${import.meta.env.VITE_API_URL}/api/Ues/${id}/parcours`);
             return response.data;
         } catch (error) {
             throw new Error('Impossible de récupérer la Ue');

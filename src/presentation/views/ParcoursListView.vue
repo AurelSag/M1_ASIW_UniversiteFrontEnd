@@ -58,10 +58,10 @@ const onParcoursCreated = (newParcours: Parcours) => {
   parcours.value.unshift(newParcours);
 };
 
-const onParcoursUpdated = (update: { message: string; parcours: Parcours }) => {
-  const index = parcours.value.findIndex((p) => p.ID === update.parcours.ID);
+const onParcoursUpdated = (newParcours: Parcours) => {
+  const index = parcours.value.findIndex((p) => p.ID === newParcours.ID);
   if (index !== -1) {
-    parcours.value[index] = update.parcours;
+    parcours.value[index] = newParcours;
   }
 };
 
