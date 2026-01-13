@@ -14,6 +14,7 @@ import { UE } from '@/domain/entities/UE';
 import { UEDAO } from '@/domain/daos/UEDAO';
 
 import Swal from 'sweetalert2';
+import router from '@/router';
 
 const ues = ref<UE[]>([]);
 const ueForm = ref();
@@ -31,7 +32,7 @@ const columns = [
         field: 'EditionUe',
         label: 'Edition',
         formatter: formatterEdition,
-        onClick: (u: UE) => ueForm.value?.openForm(u),
+        onClick: (u: UE) => router.push(`/ue/${u.ID}`),
         style: 'width: 32px;text-align:center;'
     },
     { field: 'ID', label: 'ID', formatter: null, onClick: null, style: null },

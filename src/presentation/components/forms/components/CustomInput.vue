@@ -2,7 +2,7 @@
 const model = defineModel();
 
 const props = defineProps<{
-  id: string;
+  ID: string;
   libelle: string;
   type: string;
   placeholder: string | undefined;

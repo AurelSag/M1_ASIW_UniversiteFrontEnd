@@ -16,8 +16,8 @@ export class EtudiantDAO implements IDAO<Etudiant> {
 
     public async create(data: Etudiant): Promise<Etudiant> {
         try {
-            const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/Etudiant`, data);
-            return response.data;
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/etudiants`, data);
+            return response.data.etudiant;
         } catch (error) {
             throw new Error('Impossible de créer le nouvel étudiant');
         }
@@ -25,7 +25,7 @@ export class EtudiantDAO implements IDAO<Etudiant> {
 
     public async get(id: number): Promise<Etudiant> {
         try {
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/Etudiant/${id}`);
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/etudiants/${id}`);
             return response.data;
         } catch (error) {
             throw new Error('Impossible de récupérer l\'étudiant');
@@ -34,7 +34,7 @@ export class EtudiantDAO implements IDAO<Etudiant> {
 
     public async update(id: number, data: Etudiant): Promise<Etudiant> {
         try {
-            const response = await axios.put(`${import.meta.env.VITE_API_URL}/api/Etudiant/${id}`, data);
+            const response = await axios.put(`${import.meta.env.VITE_API_URL}/api/etudiants/${id}`, data);
             return response.data;
         } catch (error) {
             throw new Error('Impossible de mettre à jour l\'étudiant');
@@ -43,7 +43,7 @@ export class EtudiantDAO implements IDAO<Etudiant> {
 
     public async delete(id: number): Promise<void> {
         try {
-            await axios.delete(`${import.meta.env.VITE_API_URL}/api/Etudiant/${id}`);
+            await axios.delete(`${import.meta.env.VITE_API_URL}/api/etudiants/${id}`);
         } catch (error) {
             throw new Error('Impossible de supprimer l\'étudiant');
         }
@@ -51,7 +51,7 @@ export class EtudiantDAO implements IDAO<Etudiant> {
 
     public async list(): Promise<Etudiant[]> {
         try {
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/Etudiant`);
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/etudiants`);
             return response.data;
         } catch (error) {
             throw new Error('Impossible de récupérer la liste des étudiants');

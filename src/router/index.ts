@@ -3,6 +3,7 @@ import HomeView from '../presentation/views/HomeView.vue';
 import ParcoursListView from '@/presentation/views/ParcoursListView.vue';
 import UeListView from '@/presentation/views/UeListView.vue';
 import EtudiantListView from '@/presentation/views/EtudiantListView.vue';
+import UeView from '@/presentation/views/UeView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -21,6 +22,11 @@ const router = createRouter({
       path: '/ue',
       name: 'ue',
       component: UeListView
+    },
+    {
+      path: '/ue/:id',
+      name: 'ue-edit',
+      component: UeView
     },
     {
       path: '/etudiants',
